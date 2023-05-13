@@ -1,6 +1,6 @@
 PWD := $(shell pwd)
 APP_NAME := $(shell basename ${PWD})
-GOLANGCI_LINT_VERSION := 1.51.2
+GOLANGCI_LINT_VERSION := 1.52.2
 GOLANGCI_LINT := bin/golangci-lint-$(GOLANGCI_LINT_VERSION)/golangci-lint
 
 all: help
