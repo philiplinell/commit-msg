@@ -46,7 +46,7 @@ Use flag `--conventional-commit` if the commit should be conventional commit com
 
 ### Style
 
-Use flag `-style` to specify the style of the commit.
+Use flag `--style` to specify the style of the commit.
 
 ```
 $ commit-msg --style="Conversational and Casual" --timeout=10s --file ./example_commit_msg
@@ -78,7 +78,8 @@ Problem: The Makefile and init.sh scripts were difficult to maintain and contain
 Solution: In this commit, we've made the following changes:
 
 - Updated the Makefile to reflect the new module path
-- Removed the install-hooks and uninstall-hooks targets from the Makefile, as they were not being used
+- Removed the install-hooks and uninstall-hooks targets from the Makefile, as
+  they were not being used
 - Removed the pre-push hook script, as it was not being used
 - Removed the init.sh script, as it was not being used
 
