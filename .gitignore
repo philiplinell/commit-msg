@@ -4,3 +4,4 @@ gen/
 coverage.out
 .env
 __debug_bin
+example_commit_msg
