@@ -45,7 +45,7 @@ func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string) (GetTypeR
 	return o.doChatCompletionRequest(ctx, []openai.Message{
 		{
 			Role:    openai.SystemRole,
-			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit header and the commit body separated by newlines.",
+			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit subject and the commit body separated by newlines. The commit subject should be in imperative mood.",
 		},
 		{
 			Role: openai.UserRole,
@@ -64,7 +64,7 @@ index 0000000..ca34b6a
 		},
 		{
 			Role:    openai.AssistantRole,
-			Content: "feat: Added README.md to explain the tool usage\n\nThis commit introduces a new README.md file. The purpose of this file is to provide detailed instructions and important notes about the new tool that generates commit message suggestions using the OpenAI API. It highlights the tool's functionality and data it sends to OpenAI, including filenames and lines changed.",
+			Content: "feat: Add README.md to explain the tool usage\n\nThis commit introduces a new README.md file. The purpose of this file is to provide detailed instructions and important notes about the new tool that generates commit message suggestions using the OpenAI API. It highlights the tool's functionality and data it sends to OpenAI, including filenames and lines changed.",
 		},
 
 		// This is the final message that the assistant should respond to.
