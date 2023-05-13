@@ -52,7 +52,12 @@ Use flag `-style` to specify the style of the commit.
 $ commit-msg --style="Conversational and Casual" --timeout=10s --file ./example_commit_msg
 Refactor project structure and update Makefile
 
-We've made some changes to the project structure and updated the Makefile accordingly. Specifically, we've changed the module path from "github.com/philiplinell/go-template" to "github.com/philiplinell/commit-msg". We've also removed the "init.sh" script, which was used to initialize a new repository with the correct module path and hooks. Instead, users will need to manually update the module path in the "go.mod" and "Makefile" files. 
+We've made some changes to the project structure and updated the Makefile
+accordingly. Specifically, we've changed the module path from
+"github.com/philiplinell/go-template" to "github.com/philiplinell/commit-msg".
+We've also removed the "init.sh" script, which was used to initialize a new
+repository with the correct module path and hooks. Instead, users will need to
+manually update the module path in the "go.mod" and "Makefile" files. 
 
 
 $ commit-msg --style="Bullet-pointed or List-based" --timeout=10s --file ./example_commit_msg
