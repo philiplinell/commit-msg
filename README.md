@@ -5,6 +5,35 @@ Create a commit message suggestion from the git diff using the openAI API.
 Note that this means that filename and lines changed is sent to openAI. If that
 bothers you - don't use this tool.
 
+## Example Usage
+
+Needs `commit-msg` (that is the binary from this repo) in PATH.
+
+```sh
+───────┬────────────────────────────────────────────────────────────────────────────────────
+       │ File: .git/hooks/prepare-commit-msg
+───────┼────────────────────────────────────────────────────────────────────────────────────
+   1   │ #!/bin/sh
+   2   │
+   3   │ # Use CLI tool commit-msg to fetch a suggested commit message. Prepend the
+   4   │ # suggested commit message to the commit message file.
+   5   │
+   6   │ COMMIT_MSG_FILE=$1
+   7   │
+   8   │ echo "Fetching suggested commit message..."
+   9   │
+  10   │ COMMIT_MSG=$(commit-msg --timeout=15s --file=$COMMIT_MSG_FILE)
+  11   │
+  12   │ if [ $? -ne 0 ]; then
+  13   │     echo "❌ prepare-commit-msg: commit-msg failed. Doing nothing..."
+  14   │     exit 0
+  15   │ fi
+  16   │
+  17   │ printf '%s\n%s\n' "${COMMIT_MSG}" "$(cat $COMMIT_MSG_FILE)" >$COMMIT_MSG_FILE
+───────┴────────────────────────────────────────────────────────────────────────────────────
+
+```
+
 ## Todos
 
 - [ ] Support a tone/style setting.
