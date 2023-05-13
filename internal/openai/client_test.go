@@ -12,11 +12,11 @@ import (
 //go:embed testdata
 var testdata embed.FS
 
-type mockHttpClient struct {
+type mockHTTPClient struct {
 	DoFn func(req *http.Request) (*http.Response, error)
 }
 
-func (f mockHttpClient) Do(req *http.Request) (*http.Response, error) {
+func (f mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	return f.DoFn(req)
 }
 
@@ -78,7 +78,7 @@ func TestInvalidTemperatureReturnsErr(t *testing.T) {
 		},
 	}
 
-	httpClient := createFakeHttpClient(t, http.StatusOK, "testdata/chat_completion_response.json")
+	httpClient := createFakeHTTPClient(t, http.StatusOK, "testdata/chat_completion_response.json")
 
 	client := openai.NewClient(httpClient, "")
 
@@ -95,7 +95,7 @@ func TestInvalidTemperatureReturnsErr(t *testing.T) {
 }
 
 func TestSuccessfulChatCompletionRequest(t *testing.T) {
-	httpClient := createFakeHttpClient(t, http.StatusOK, "testdata/chat_completion_response.json")
+	httpClient := createFakeHTTPClient(t, http.StatusOK, "testdata/chat_completion_response.json")
 
 	client := openai.NewClient(httpClient, "")
 
@@ -109,7 +109,7 @@ func TestSuccessfulChatCompletionRequest(t *testing.T) {
 	}
 }
 
-func createFakeHttpClient(t *testing.T, expectedStatusCode int, testdataFile string) openai.Doer {
+func createFakeHTTPClient(t *testing.T, expectedStatusCode int, testdataFile string) openai.Doer {
 	t.Helper()
 
 	file, err := testdata.Open(testdataFile)
@@ -119,10 +119,10 @@ func createFakeHttpClient(t *testing.T, expectedStatusCode int, testdataFile str
 
 	defer file.Close()
 
-	return mockHttpClient{
+	return mockHTTPClient{
 		DoFn: func(req *http.Request) (*http.Response, error) {
 			return &http.Response{
-				StatusCode: 200,
+				StatusCode: expectedStatusCode,
 				Body:       file,
 				Header:     make(http.Header),
 			}, nil

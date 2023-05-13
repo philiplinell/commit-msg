@@ -45,7 +45,7 @@ func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string) (GetTypeR
 	return o.doChatCompletionRequest(ctx, []openai.Message{
 		{
 			Role:    openai.SystemRole,
-			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit header and the commit body seperated by newlines.",
+			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit header and the commit body separated by newlines.",
 		},
 		{
 			Role: openai.UserRole,

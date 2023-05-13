@@ -1,14 +1,14 @@
 /*
-	Package build provides a way to get information about the current build.
+Package build provides a way to get information about the current build.
 
-	Note that you need to build with the full package path to correctly insert the build information.
+Note that you need to build with the full package path to correctly insert the build information.
 
-	E.g.:
-		go build -o bin/helper github.com/philiplinell/commit-msg/cmd/cli
-	instead of
-		go build -o bin/helper ./cmd/cli/*.go
+E.g.:
+	go build -o bin/helper github.com/philiplinell/commit-msg/cmd/cli
+instead of
+	go build -o bin/helper ./cmd/cli/*.go
 
-	See more here: https://github.com/golang/go/issues/51831
+See more here: https://github.com/golang/go/issues/51831
 */
 package build
 
@@ -31,13 +31,13 @@ type Info struct {
 }
 
 const (
-	// vcsRevisionKey - revision identifier for the current commit or checkout
+	// vcsRevisionKey - revision identifier for the current commit or checkout.
 	vcsRevisionKey = "vcs.revision"
 
-	// vscTimeKey - the modification time associated with vcs.revision, in RFC3339 format
+	// vscTimeKey - the modification time associated with vcs.revision, in RFC3339 format.
 	vcsTimeKey = "vcs.time"
 
-	// vcsModifiedKey - true or false indicating whether the source tree had local modifications
+	// vcsModifiedKey - true or false indicating whether the source tree had local modifications.
 	vcsModifiedKey = "vcs.modified"
 )
 

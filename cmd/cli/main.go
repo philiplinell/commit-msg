@@ -19,9 +19,10 @@ import (
 )
 
 type config struct {
-	ApiKey string `env:"OPENAI_API_KEY"`
+	APIKey string `env:"OPENAI_API_KEY"`
 }
 
+//nolint:gochecknoglobals
 var (
 	costFlag    bool
 	timeoutFlag string
@@ -68,7 +69,7 @@ func main() {
 	}
 }
 
-func cliAction(ctx *cli.Context) error {
+func cliAction(_ *cli.Context) error {
 	cfg := config{}
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err)
@@ -76,7 +77,7 @@ func cliAction(ctx *cli.Context) error {
 
 	httpClient := http.DefaultClient
 
-	openAiClient := openai.NewClient(httpClient, cfg.ApiKey)
+	openAiClient := openai.NewClient(httpClient, cfg.APIKey)
 	commitClient := commitassist.New(openAiClient)
 
 	timeout, err := time.ParseDuration(timeoutFlag)
@@ -91,6 +92,7 @@ func cliAction(ctx *cli.Context) error {
 
 	gitDiff, err := readFile()
 	if err != nil {
+		//nolint:gocritic
 		log.Fatalf("could not read file %q: %s", filename, err)
 	}
 

@@ -84,7 +84,7 @@ const (
 	UserRole aiRole = "user"
 
 	// The system message helps set the behavior of the assistant. E.g. the
-	// assistant can be instructed with "You are a helpful assistant."
+	// assistant can be instructed with "You are a helpful assistant".
 	SystemRole aiRole = "system"
 
 	// The assistant messages help store prior responses. They can also be
@@ -108,9 +108,9 @@ type Message struct {
 // A higher temperature value means that the completions will be more diverse.
 // See more about temperature here:
 // https://platform.openai.com/docs/quickstart/adjust-your-settings
-func (c *Client) ChatCompletionRequest(ctx context.Context, messages []Message, model aiModel, temperature float32) (chatCompletionResponse, error) {
+func (c *Client) ChatCompletionRequest(ctx context.Context, messages []Message, model aiModel, temperature float32) (ChatCompletionResponse, error) {
 	if temperature < 0 || temperature > 1 {
-		return chatCompletionResponse{}, fmt.Errorf("temperature must be between 0 and 1 (inclusive), got %f", temperature)
+		return ChatCompletionResponse{}, fmt.Errorf("temperature must be between 0 and 1 (inclusive), got %f", temperature)
 	}
 
 	requestBody := chatCompletionRequest{
@@ -120,12 +120,12 @@ func (c *Client) ChatCompletionRequest(ctx context.Context, messages []Message, 
 
 	requestBytes, err := json.Marshal(requestBody)
 	if err != nil {
-		return chatCompletionResponse{}, fmt.Errorf("could not marshal body: %w", err)
+		return ChatCompletionResponse{}, fmt.Errorf("could not marshal body: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, chatCompletionURL, bytes.NewBuffer(requestBytes))
 	if err != nil {
-		return chatCompletionResponse{}, fmt.Errorf("could not create request: %w", err)
+		return ChatCompletionResponse{}, fmt.Errorf("could not create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -133,20 +133,20 @@ func (c *Client) ChatCompletionRequest(ctx context.Context, messages []Message, 
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return chatCompletionResponse{}, fmt.Errorf("could not do request: %w", err)
+		return ChatCompletionResponse{}, fmt.Errorf("could not do request: %w", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return chatCompletionResponse{}, fmt.Errorf("got status code %q, expected %d", resp.Status, http.StatusOK)
+		return ChatCompletionResponse{}, fmt.Errorf("got status code %q, expected %d", resp.Status, http.StatusOK)
 	}
 
 	var cResponse rawChatCompletionResponse
 
 	err = json.NewDecoder(resp.Body).Decode(&cResponse)
 	if err != nil {
-		return chatCompletionResponse{}, fmt.Errorf("could not decode response: %w", err)
+		return ChatCompletionResponse{}, fmt.Errorf("could not decode response: %w", err)
 	}
 
 	cost := calculateCost(cResponse.Usage.TotalTokens, model)
@@ -156,7 +156,7 @@ func (c *Client) ChatCompletionRequest(ctx context.Context, messages []Message, 
 		answers = append(answers, choice.Content())
 	}
 
-	return chatCompletionResponse{
+	return ChatCompletionResponse{
 		Created:  time.Unix(cResponse.Created, 0),
 		Model:    model,
 		Cost:     cost,
@@ -196,7 +196,7 @@ type rawChatCompletionResponse struct {
 	Choices []rawChatCompletionChoiceResponse `json:"choices"`
 }
 
-type chatCompletionResponse struct {
+type ChatCompletionResponse struct {
 	Created time.Time
 	Model   aiModel
 
