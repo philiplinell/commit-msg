@@ -38,6 +38,48 @@ Needs `commit-msg` (that is the binary from this repo) in PATH.
 
 ```
 
+## Flags
+
+### Conventional Commit
+
+Use flag `--conventional-commit` if the commit should be conventional commit compliant.
+
+### Style
+
+Use flag `-style` to specify the style of the commit.
+
+```
+$ commit-msg --style="Conversational and Casual" --timeout=10s --file ./example_commit_msg
+Refactor project structure and update Makefile
+
+We've made some changes to the project structure and updated the Makefile accordingly. Specifically, we've changed the module path from "github.com/philiplinell/go-template" to "github.com/philiplinell/commit-msg". We've also removed the "init.sh" script, which was used to initialize a new repository with the correct module path and hooks. Instead, users will need to manually update the module path in the "go.mod" and "Makefile" files. 
+
+
+$ commit-msg --style="Bullet-pointed or List-based" --timeout=10s --file ./example_commit_msg
+Refactor project structure and remove unnecessary files
+
+In this commit:
+
+- The project structure has been refactored to use the new repository name "commit-msg"
+- The Makefile has been updated to reflect the new repository name
+- The pre-push git hook and init.sh files have been removed as they are no longer needed
+
+
+$ commit-msg --style="Problem-Solution" --timeout=10s --file ./example_commit_msg
+Refactor Makefile and init.sh for better maintainability
+
+Problem: The Makefile and init.sh scripts were difficult to maintain and contained unnecessary code.
+
+Solution: In this commit, we've made the following changes:
+
+- Updated the Makefile to reflect the new module path
+- Removed the install-hooks and uninstall-hooks targets from the Makefile, as they were not being used
+- Removed the pre-push hook script, as it was not being used
+- Removed the init.sh script, as it was not being used
+
+These changes will make the codebase easier to maintain and reduce clutter.
+```
+
 ## Todos
 
 - [x] Support a tone/style setting.
@@ -51,4 +93,4 @@ Needs `commit-msg` (that is the binary from this repo) in PATH.
 
     - Problem-Solution: This style first states the problem that was present and then details the solution that was implemented. It's especially useful when the commit addresses specific bugs or issues.
 
-- [ ] Flag for conventional commit, on or off.
+- [x] Flag for conventional commit, on or off.
