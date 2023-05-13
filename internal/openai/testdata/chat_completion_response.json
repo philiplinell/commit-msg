@@ -1,0 +1,1 @@
+{"id":"chatcmpl-abc","object":"chat.completion","created":1682092681,"model":"gpt-3.5-turbo-0301","usage":{"prompt_tokens":103,"completion_tokens":1,"total_tokens":104},"choices":[{"message":{"role":"assistant","content":"hello, world!"},"finish_reason":"stop","index":0}]}
