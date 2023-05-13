@@ -75,9 +75,11 @@ func ValidateMessageStyle(supposedStyle string) (Style, error) {
 }
 
 type MessageConfig struct {
-	Style Style
+	Style                       Style
+	ConventionalCommitCompliant bool
 }
 
+// GetCommitMessage returns a commit message based on the git diff provided.
 func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string, cfg *MessageConfig) (GetTypeResponse, error) {
 	// styleDescriptions is a map of the style to a description of the style,
 	// to be used in the prompt to the OpenAI API. It should be used after "The
@@ -99,10 +101,15 @@ func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string, cfg *Mess
 		return GetTypeResponse{}, err
 	}
 
+	conventionalCommitContent := ""
+	if cfg.ConventionalCommitCompliant {
+		conventionalCommitContent = "Use the conventional commit standard, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!')."
+	}
+
 	return o.doChatCompletionRequest(ctx, []openai.Message{
 		{
 			Role:    openai.SystemRole,
-			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit subject and the commit body separated by newlines. The commit subject should be in imperative mood. The style of the commit message should be " + styleDescriptions[cfg.Style],
+			Content: fmt.Sprintf("You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files. The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit subject and the commit body separated by newlines. The commit subject should be in imperative mood. The style of the commit message should be %s. %s", styleDescriptions[cfg.Style], conventionalCommitContent),
 		},
 		{
 			Role: openai.UserRole,
@@ -121,7 +128,7 @@ index 0000000..ca34b6a
 		},
 		{
 			Role:    openai.AssistantRole,
-			Content: "feat: Add README.md to explain the tool usage\n\nThis commit introduces a new README.md file. The purpose of this file is to provide detailed instructions and important notes about the new tool that generates commit message suggestions using the OpenAI API. It highlights the tool's functionality and data it sends to OpenAI, including filenames and lines changed.",
+			Content: getExpectedMessage(cfg.Style, cfg.ConventionalCommitCompliant),
 		},
 
 		// This is the final message that the assistant should respond to.
@@ -152,4 +159,44 @@ func (o *Client) doChatCompletionRequest(ctx context.Context, messages []openai.
 		Message: message,
 		Cost:    content.Cost * 100,
 	}, nil
+}
+
+func getExpectedMessage(style Style, conventionalCommitCompliant bool) string {
+	var expectedMessage string
+	switch style {
+	case DescriptiveAndNeutral:
+		expectedMessage = "Add README.md to explain the tool usage\n\n" +
+			"This commit adds a new README.md file that serves as a comprehensive guide for utilizing the recently developed tool. The README.md file contains explicit instructions and essential information regarding the functionality of the tool, as well as the details of its interaction with the OpenAI API. It provides insights into the tool's capabilities, along with specific details on the files and lines that are affected during its operation"
+
+	case ConversationalAndCasual:
+		expectedMessage = "Unleashing a brand new README.md to demystify our OpenAI-powered commit message wizardry!\n\n" +
+			"Hey folks,\n" +
+			"We just slapped a shiny new README.md into the mix! 🎉\n" +
+			"This bad boy's job is to school you all about our super cool, freshly baked tool that spits out commit message suggestions - all powered by the magic of OpenAI (no wizards were harmed in the process, promise! 🧙.\n" +
+			"It's got everything - the ins, the outs, the what-have-yous about our tool. Oh, and it's also gonna give you the lowdown on the stuff we're sending over to OpenAI (don't worry, it's just filenames and changed lines, not your secret cookie recipes! 🍪).\n" +
+			"So strap in, take a gander at the README, and let's get those commit messages singing! 🎵"
+
+	case BulletPointedOrListBased:
+		expectedMessage = "Introducing README.md to illuminate tool usage\n\n " +
+			"In this commit:\n\n" +
+			"- A new README.md file has been added\n" +
+			"- Its purpose: to offer detailed instructions and critical notes about our fresh tool that generates commit message suggestions\n" +
+			"- What's covered in the README:\n" +
+			"  - The tool's functionality\n" +
+			"  - The type of data sent to OpenAI, like filenames and lines changed\n"
+
+	case ProblemSolution:
+		expectedMessage = "Addressing the lack of clarity with new README.md\n\n" +
+			"Problem: Users were left in the dark about how to use our new commit message suggestion tool, and there was ambiguity regarding what data was being sent to OpenAI.\n\n" +
+			"Solution: In this commit, we've introduced a README.md file that does the following:\n\n" +
+			"- Provides detailed instructions and important notes about the usage of the tool\n" +
+			"- Sheds light on the tool's functionality\n" +
+			"- Outlines the specific data it sends to OpenAI, such as filenames and lines changed"
+	}
+
+	if conventionalCommitCompliant {
+		expectedMessage = "feat: " + expectedMessage
+	}
+
+	return expectedMessage
 }

@@ -24,10 +24,11 @@ type config struct {
 
 //nolint:gochecknoglobals
 var (
-	costFlag    bool
-	timeoutFlag string
-	filename    string
-	style       string
+	conventionalCommit bool
+	costFlag           bool
+	filename           string
+	style              string
+	timeoutFlag        string
 )
 
 func main() {
@@ -47,6 +48,11 @@ func main() {
 				Name:        "cost",
 				Usage:       "if the cost should be printed to stdout",
 				Destination: &costFlag,
+			},
+			&cli.BoolFlag{
+				Name:        "conventional-commit",
+				Usage:       "if the commit should be conventional commit compliant",
+				Destination: &conventionalCommit,
 			},
 			&cli.StringFlag{
 				Name:        "timeout",
@@ -104,7 +110,10 @@ func cliAction(_ *cli.Context) error {
 		log.Fatalf("could not read file %q: %s", filename, err)
 	}
 
-	var commitMessageCfg commitassist.MessageConfig
+	commitMessageCfg := commitassist.MessageConfig{
+		Style:                       commitassist.DescriptiveAndNeutral,
+		ConventionalCommitCompliant: conventionalCommit,
+	}
 
 	validStyle, err := commitassist.ValidateMessageStyle(style)
 	if err != nil {
