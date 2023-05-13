@@ -5,6 +5,10 @@ Create a commit message suggestion from the git diff using the openAI API.
 Note that this means that filename and lines changed is sent to openAI. If that
 bothers you - don't use this tool.
 
+Make sure environment variable `OPENAI_API_KEY` contains a valid API key. Note
+that this tool uses the openAI API so it will incur a cost. It is recommended to
+set a hard limit in the [openai account settings panel](https://platform.openai.com/account/billing/limits).
+
 ## Example Usage
 
 Needs `commit-msg` (that is the binary from this repo) in PATH.
