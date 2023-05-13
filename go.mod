@@ -1,3 +1,3 @@
-module github.com/philiplinell/go-template
+module github.com/philiplinell/commit-msg
 
 go 1.19

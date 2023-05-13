@@ -15,7 +15,7 @@ run: build
 .PHONY: build
 build:
 	@echo "👷 Building the application"
-	@go build -o bin/${APP_NAME} github.com/philiplinell/go-template/cmd/cli
+	@go build -o bin/${APP_NAME} github.com/philiplinell/commit-msg/cmd/cli
 	@echo "✅ Built !"
 
 ## test: run tests
@@ -37,17 +37,6 @@ lint: ${GOLANGCI_LINT}
 	@echo "🕵️  Linting code"
 	@${GOLANGCI_LINT} run
 
-## install-hooks: install git hooks
-.PHONY: install-hooks
-install-hooks:
-	@echo "👷 Installing git hooks"
-	@cp ./hooks/pre-push ./.git/hooks/pre-push
-
-## uninstall-hooks: remove git hooks from .git/hooks
-uninstall-hooks:
-	@echo "👷 Uninstalling git hooks"
-	@rm -f ./.git/hooks/pre-push
-
 ## expvarmon: start expvarmon tui (github.com/divan/expvarmon)
 .PHONY: expvarmon
 expvarmon:
@@ -61,7 +50,7 @@ install-delve:
 ## debug: Starts the delve debugger
 .PHONY: debug
 debug:
-	dlv debug github.com/philiplinell/go-template/cmd/cli
+	dlv debug github.com/philiplinell/commit-msg/cmd/cli
 
 .PHONY: help
 help:
