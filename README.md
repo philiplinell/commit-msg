@@ -40,7 +40,7 @@ Needs `commit-msg` (that is the binary from this repo) in PATH.
 
 ## Todos
 
-- [ ] Support a tone/style setting.
+- [x] Support a tone/style setting.
     Use the following:
 
     - Descriptive and Neutral: This style focuses on stating the changes as plainly and objectively as possible. It's typically preferred in most development environments.

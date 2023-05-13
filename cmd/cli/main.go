@@ -27,6 +27,7 @@ var (
 	costFlag    bool
 	timeoutFlag string
 	filename    string
+	style       string
 )
 
 func main() {
@@ -58,6 +59,13 @@ func main() {
 				Usage:       "the file where the changes are. Usually this will be $COMMIT_MSG_FILE set in prepare-commit-msg hook",
 				Destination: &filename,
 				Required:    true,
+			},
+			&cli.StringFlag{
+				Name: "style",
+				Usage: "the style of the commit message, e.g. " +
+					"'Descriptive and Neutral', 'Conversational and Casual', 'Bullet-pointed or List-based' or 'Problem-Solution'",
+				Destination: &style,
+				Value:       "Descriptive and Neutral",
 			},
 		},
 		Action:  cliAction,
@@ -96,7 +104,16 @@ func cliAction(_ *cli.Context) error {
 		log.Fatalf("could not read file %q: %s", filename, err)
 	}
 
-	response, err = commitClient.GetCommitMessage(requestContext, gitDiff)
+	var commitMessageCfg commitassist.MessageConfig
+
+	validStyle, err := commitassist.ValidateMessageStyle(style)
+	if err != nil {
+		log.Fatalf("could not validate style %q: %s", style, err)
+	}
+
+	commitMessageCfg.Style = validStyle
+
+	response, err = commitClient.GetCommitMessage(requestContext, gitDiff, &commitMessageCfg)
 
 	if err != nil {
 		handleError(err)

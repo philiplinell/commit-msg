@@ -41,11 +41,68 @@ type GetTypeResponse struct {
 	Cost float64
 }
 
-func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string) (GetTypeResponse, error) {
+type Style string
+
+const (
+	// DescriptiveAndNeutral: This style focuses on stating the changes as
+	// plainly and objectively as possible. It's typically preferred in most
+	// development environments.
+	DescriptiveAndNeutral Style = "Descriptive and Neutral"
+
+	// ConversationalAndCasual: This style includes using casual language or
+	// even humor to describe changes. It's less common and more appropriate
+	// for less formal environments or small, close-knit teams.
+	ConversationalAndCasual Style = "Conversational and Casual"
+
+	// BulletPointedOrListBased: Changes are presented in a list format, often
+	// used when there are multiple distinct changes that are easier to
+	// understand when broken down.
+	BulletPointedOrListBased Style = "Bullet-pointed or List-based"
+
+	// ProblemSolution: This style first states the problem that was present
+	// and then details the solution that was implemented. It's especially
+	// useful when the commit addresses specific bugs or issues.
+	ProblemSolution Style = "Problem-Solution"
+)
+
+func ValidateMessageStyle(supposedStyle string) (Style, error) {
+	switch supposedStyle {
+	case string(DescriptiveAndNeutral), string(ConversationalAndCasual), string(BulletPointedOrListBased), string(ProblemSolution):
+		return Style(supposedStyle), nil
+	default:
+		return "", fmt.Errorf("invalid style %q", supposedStyle)
+	}
+}
+
+type MessageConfig struct {
+	Style Style
+}
+
+func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string, cfg *MessageConfig) (GetTypeResponse, error) {
+	// styleDescriptions is a map of the style to a description of the style,
+	// to be used in the prompt to the OpenAI API. It should be used after "The
+	// style of the commit messages should be ".
+	var styleDescriptions = map[Style]string{
+		DescriptiveAndNeutral:    "descriptive and neutral i.e. as plainly and objectively as possible.",
+		ConversationalAndCasual:  "conversational and casual i.e. using casual language or even humor to describe changes.",
+		BulletPointedOrListBased: "bullet-pointed or list-based i.e. changes are presented in a list format, often used when there are multiple distinct changes that are easier to understand when broken down.",
+		ProblemSolution:          "problem-solution i.e. first stating the problem that was present and then details the solution that was implemented.",
+	}
+
+	if cfg == nil {
+		cfg = &MessageConfig{
+			Style: DescriptiveAndNeutral,
+		}
+	}
+
+	if _, err := ValidateMessageStyle(string(cfg.Style)); err != nil {
+		return GetTypeResponse{}, err
+	}
+
 	return o.doChatCompletionRequest(ctx, []openai.Message{
 		{
 			Role:    openai.SystemRole,
-			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit subject and the commit body separated by newlines. The commit subject should be in imperative mood.",
+			Content: "You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files, including any breaking changes, which should be denoted with a '!' (e.g., 'feat!'). The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit subject and the commit body separated by newlines. The commit subject should be in imperative mood. The style of the commit message should be " + styleDescriptions[cfg.Style],
 		},
 		{
 			Role: openai.UserRole,
