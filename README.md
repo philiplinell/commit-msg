@@ -46,10 +46,11 @@ Use flag `--conventional-commit` if the commit should be conventional commit com
 
 ### Style
 
-Use flag `--style` to specify the style of the commit.
+Use flag `--style` to specify the style of the commit. `DescriptiveAndNeutral`
+is the default if no style is specified.
 
 ```
-$ commit-msg --style="Conversational and Casual" --timeout=10s --file ./example_commit_msg
+$ commit-msg --style="ConversationalAndCasual" --timeout=10s --file ./example_commit_msg
 Refactor project structure and update Makefile
 
 We've made some changes to the project structure and updated the Makefile
@@ -60,7 +61,7 @@ repository with the correct module path and hooks. Instead, users will need to
 manually update the module path in the "go.mod" and "Makefile" files. 
 
 
-$ commit-msg --style="Bullet-pointed or List-based" --timeout=10s --file ./example_commit_msg
+$ commit-msg --style="ListBased" --timeout=10s --file ./example_commit_msg
 Refactor project structure and remove unnecessary files
 
 In this commit:
@@ -70,7 +71,7 @@ In this commit:
 - The pre-push git hook and init.sh files have been removed as they are no longer needed
 
 
-$ commit-msg --style="Problem-Solution" --timeout=10s --file ./example_commit_msg
+$ commit-msg --style="ProblemSolution" --timeout=10s --file ./example_commit_msg
 Refactor Makefile and init.sh for better maintainability
 
 Problem: The Makefile and init.sh scripts were difficult to maintain and contained unnecessary code.
@@ -85,18 +86,3 @@ Solution: In this commit, we've made the following changes:
 
 These changes will make the codebase easier to maintain and reduce clutter.
 ```
-
-## Todos
-
-- [x] Support a tone/style setting.
-    Use the following:
-
-    - Descriptive and Neutral: This style focuses on stating the changes as plainly and objectively as possible. It's typically preferred in most development environments.
-
-    - Conversational and Casual: This style includes using casual language or even humor to describe changes. It's less common and more appropriate for less formal environments or small, close-knit teams.
-
-    - Bullet-pointed or List-based: Changes are presented in a list format, often used when there are multiple distinct changes that are easier to understand when broken down.
-
-    - Problem-Solution: This style first states the problem that was present and then details the solution that was implemented. It's especially useful when the commit addresses specific bugs or issues.
-
-- [x] Flag for conventional commit, on or off.
