@@ -47,30 +47,31 @@ const (
 	// DescriptiveAndNeutral: This style focuses on stating the changes as
 	// plainly and objectively as possible. It's typically preferred in most
 	// development environments.
-	DescriptiveAndNeutral Style = "Descriptive and Neutral"
+	DescriptiveAndNeutral Style = "DescriptiveAndNeutral"
 
 	// ConversationalAndCasual: This style includes using casual language or
 	// even humor to describe changes. It's less common and more appropriate
 	// for less formal environments or small, close-knit teams.
-	ConversationalAndCasual Style = "Conversational and Casual"
+	ConversationalAndCasual Style = "ConversationalAndCasual"
 
-	// BulletPointedOrListBased: Changes are presented in a list format, often
+	// ListBased: Changes are presented in a list format, often
 	// used when there are multiple distinct changes that are easier to
 	// understand when broken down.
-	BulletPointedOrListBased Style = "Bullet-pointed or List-based"
+	ListBased Style = "ListBased"
 
 	// ProblemSolution: This style first states the problem that was present
 	// and then details the solution that was implemented. It's especially
 	// useful when the commit addresses specific bugs or issues.
-	ProblemSolution Style = "Problem-Solution"
+	ProblemSolution Style = "ProblemSolution"
 )
 
-func ValidateMessageStyle(supposedStyle string) (Style, error) {
-	switch supposedStyle {
-	case string(DescriptiveAndNeutral), string(ConversationalAndCasual), string(BulletPointedOrListBased), string(ProblemSolution):
-		return Style(supposedStyle), nil
+// ValidateMessageStyle returns an error if the assumedStyle is not a valid.
+func ValidateMessageStyle(assumedStyle string) (Style, error) {
+	switch assumedStyle {
+	case string(DescriptiveAndNeutral), string(ConversationalAndCasual), string(ListBased), string(ProblemSolution):
+		return Style(assumedStyle), nil
 	default:
-		return "", fmt.Errorf("invalid style %q", supposedStyle)
+		return "", fmt.Errorf("invalid style %q", assumedStyle)
 	}
 }
 
@@ -85,10 +86,10 @@ func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string, cfg *Mess
 	// to be used in the prompt to the OpenAI API. It should be used after "The
 	// style of the commit messages should be ".
 	var styleDescriptions = map[Style]string{
-		DescriptiveAndNeutral:    "descriptive and neutral i.e. as plainly and objectively as possible.",
-		ConversationalAndCasual:  "conversational and casual i.e. using casual language or even humor to describe changes.",
-		BulletPointedOrListBased: "bullet-pointed or list-based i.e. changes are presented in a list format, often used when there are multiple distinct changes that are easier to understand when broken down.",
-		ProblemSolution:          "problem-solution i.e. first stating the problem that was present and then details the solution that was implemented.",
+		DescriptiveAndNeutral:   "descriptive and neutral i.e. as plainly and objectively as possible.",
+		ConversationalAndCasual: "conversational and casual i.e. using casual language or even humor to describe changes.",
+		ListBased:               "list-based i.e. changes are presented in a list format, often used when there are multiple distinct changes that are easier to understand when broken down.",
+		ProblemSolution:         "problem-solution i.e. first stating the problem that was present and then details the solution that was implemented.",
 	}
 
 	if cfg == nil {
@@ -176,7 +177,7 @@ func getExpectedMessage(style Style, conventionalCommitCompliant bool) string {
 			"It's got everything - the ins, the outs, the what-have-yous about our tool. Oh, and it's also gonna give you the lowdown on the stuff we're sending over to OpenAI (don't worry, it's just filenames and changed lines, not your secret cookie recipes! 🍪).\n" +
 			"So strap in, take a gander at the README, and let's get those commit messages singing! 🎵"
 
-	case BulletPointedOrListBased:
+	case ListBased:
 		expectedMessage = "Introducing README.md to illuminate tool usage\n\n " +
 			"In this commit:\n\n" +
 			"- A new README.md file has been added\n" +

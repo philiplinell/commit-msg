@@ -69,9 +69,9 @@ func main() {
 			&cli.StringFlag{
 				Name: "style",
 				Usage: "the style of the commit message, e.g. " +
-					"'Descriptive and Neutral', 'Conversational and Casual', 'Bullet-pointed or List-based' or 'Problem-Solution'",
+					fmt.Sprintf("%q, %q, %q or %q", commitassist.DescriptiveAndNeutral, commitassist.ConversationalAndCasual, commitassist.ListBased, commitassist.ProblemSolution),
 				Destination: &style,
-				Value:       "Descriptive and Neutral",
+				Value:       string(commitassist.DescriptiveAndNeutral),
 			},
 		},
 		Action:  cliAction,
