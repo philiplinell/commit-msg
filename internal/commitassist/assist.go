@@ -81,15 +81,16 @@ type MessageConfig struct {
 }
 
 // GetCommitMessage returns a commit message based on the git diff provided.
+//nolint:funlen
 func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string, cfg *MessageConfig) (GetTypeResponse, error) {
 	// styleDescriptions is a map of the style to a description of the style,
 	// to be used in the prompt to the OpenAI API. It should be used after "The
 	// style of the commit messages should be ".
-	var styleDescriptions = map[Style]string{
-		DescriptiveAndNeutral:   "descriptive and neutral i.e. as plainly and objectively as possible.",
-		ConversationalAndCasual: "conversational and casual i.e. using casual language or even humor to describe changes.",
-		ListBased:               "list-based i.e. changes are presented in a list format, often used when there are multiple distinct changes that are easier to understand when broken down.",
-		ProblemSolution:         "problem-solution i.e. first stating the problem that was present and then details the solution that was implemented.",
+	styleDescriptions := map[Style]string{
+		DescriptiveAndNeutral:   "descriptive and neutral. Use clear, concise language to describe the changes. The message should be objective and factual, focusing solely on what was done, without injecting personal opinions or unnecessary context",
+		ConversationalAndCasual: "conversational and casual using informal language or even a touch of humor to describe the changes. You should aim to make the commit messages engaging, yet still professional and informative",
+		ListBased:               "list-based. Use bullet points or numbered lists to itemize the changes made. Each point should be concise, specific, and self-explanatory. This style is particularly suitable for commits that involve multiple changes or updates. Despite the structured format, ensure the message provides enough context to understand the changes without having to look at the code",
+		ProblemSolution:         "problem-solution oriented. Begin by clearly outlining the problem or issue that was addressed. Follow this with a concise explanation of the solution implemented to fix the problem. This style encourages a logical and methodical approach to describing changes, and is particularly effective for commits aimed at fixing bugs or improving functionality",
 	}
 
 	if cfg == nil {
@@ -109,8 +110,27 @@ func (o *Client) GetCommitMessage(ctx context.Context, gitDiff string, cfg *Mess
 
 	return o.doChatCompletionRequest(ctx, []openai.Message{
 		{
-			Role:    openai.SystemRole,
-			Content: fmt.Sprintf("You are helpful assistant that suggest commit messages. The commit messages should explain the changes made in the files. The structure of the commit message can be flexible, varying based on the size and complexity of the changes. You should only respond with the commit subject and the commit body separated by newlines. The commit subject should be in imperative mood. The style of the commit message should be %s. %s", styleDescriptions[cfg.Style], conventionalCommitContent),
+			Role: openai.SystemRole,
+			Content: fmt.Sprintf(`You are an insightful assistant that crafts
+commit messages. The commit messages should accurately and succinctly explain
+the changes made in the files, detailing the reason for changes and the effect
+they will have on the project. Your responses should consist of the commit
+subject and the commit body, separated by newlines.
+
+The commit subject should:
+- Be brief (50 characters or less)
+- Use the imperative mood (e.g., "Add", "Fix", "Change")
+
+The commit body should:
+- Further explain the changes in detail if necessary
+- Be wrapped at 72 characters
+- Be separated from the commit subject by a blank line
+
+Make sure they provide enough context to understand the changes without having to look at the code.
+
+The style of the commit message should be %s.
+%s
+`, styleDescriptions[cfg.Style], conventionalCommitContent),
 		},
 		{
 			Role: openai.UserRole,
